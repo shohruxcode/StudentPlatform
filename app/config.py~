@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).parent.parent  # project root
 
 
 class Settings(BaseSettings):
-
+    # ... boshqa sozlamalar
     DATABASE_URL: str = "postgresql+asyncpg://postgres:123@localhost:5432/Student_Platform"
     # ...
     APP_NAME: str = "Student Programming Platform"

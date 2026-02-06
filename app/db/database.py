@@ -4,10 +4,8 @@ from sqlalchemy import text
 
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=settings.DEBUG,  # SQL so'rovlarni logda ko'rish uchun
-    future=True,
-    pool_size=10,
-    max_overflow=20
+    echo=settings.DEBUG,
+    future=True
 )
 
 AsyncSessionLocal = async_sessionmaker(

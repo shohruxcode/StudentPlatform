@@ -1,4 +1,4 @@
-from sqlalchemy.orm import declarative_base
+from app.models.user import Student
+from app.models.project import Project
 
 
-Base = declarative_base()

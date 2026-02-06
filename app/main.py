@@ -2,25 +2,25 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.config import Settings
+from app.config import settings
 from app.api.v1.router import api_router
 from app.db.database import init_db
 from app.core.exceptions import register_exception_handlers
-
+from app.db import base
 
 def create_application() -> FastAPI:
     app = FastAPI(
-        title=Settings.APP_NAME,
-        version=Settings.APP_VERSION,
-        debug=Settings.DEBUG,
-        openapi_url=f"{Settings.API_V1_PREFIX}/openapi.json",
+        title=settings.APP_NAME,
+        version=settings.APP_VERSION,
+        debug=settings.DEBUG,
+        openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
         docs_url="/docs",
         redoc_url="/redoc",
     )
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=Settings.BACKEND_CORS_ORIGINS,
+        allow_origins=settings.BACKEND_CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -28,12 +28,12 @@ def create_application() -> FastAPI:
 
     app.include_router(
         api_router,
-        prefix=Settings.API_V1_PREFIX
+        prefix=settings.API_V1_PREFIX
     )
 
     app.mount(
         "/uploads",
-        StaticFiles(directory=Settings.UPLOAD_DIR),
+        StaticFiles(directory=settings.UPLOAD_DIR),
         name="uploads"
     )
 
@@ -56,8 +56,7 @@ async def shutdown_event():
     print("Platform suspended...")
 
 
+if __name__ == "__main__":
+    import uvicorn
 
-
-
-
-
+    uvicorn.run(app, host="0.0.0.0", port=8000)
