@@ -1,0 +1,31 @@
+from datetime import datetime
+from sqlalchemy import String, Integer, Text, DateTime, ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import Optional
+from app.db.base import Base
+
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    student_id: Mapped[int] = mapped_column(
+        ForeignKey("students.id", ondelete="CASCADE")
+    )
+
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text)
+
+    github_url: Mapped[Optional[str]] = mapped_column(String(512))
+    live_demo_url: Mapped[Optional[str]] = mapped_column(String(512))
+
+    difficulty_level: Mapped[str] = mapped_column(String(50), default="Easy")
+
+    points_earned: Mapped[int] = mapped_column(Integer, default=0)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    student = relationship("Student", back_populates="projects")

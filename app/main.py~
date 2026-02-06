@@ -1,0 +1,134 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
+from app.config import Settings
+from app.api.v1.router import api_router
+from app.db.database import init_db
+from app.core.exceptions import register_exception_handlers
+
+
+def create_application() -> FastAPI:
+    app = FastAPI(
+        title=Settings.APP_NAME,
+        version=Settings.APP_VERSION,
+        debug=Settings.DEBUG,
+        openapi_url=f"{Settings.API_V1_PREFIX}/openapi.json",
+        docs_url="/docs",
+        redoc_url="/redoc",
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=Settings.BACKEND_CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.include_router(
+        api_router,
+        prefix=Settings.API_V1_PREFIX
+    )
+
+    app.mount(
+        "/uploads",
+        StaticFiles(directory=Settings.UPLOAD_DIR),
+        name="uploads"
+    )
+
+    register_exception_handlers(app)
+
+    return app
+
+
+app = create_application()
+
+
+@app.on_event("startup")
+async def startup_event():
+    print("Student Programming Platform started!")
+    await init_db()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    print("Platform suspended...")
+
+
+
+
+import asyncio
+from logging.config import fileConfig
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import create_async_engine
+from alembic import context
+
+from app.db.base import Base
+from app.models.user import Student
+from app.models.course import Course
+from app.models.project import Project
+from app.models.achievement import Achievement
+from app.models.student_achievement import StudentAchievement
+from app.models.student_degree import StudentDegree
+from app.models.degree import Degree
+from app.models.submission import Submission
+from app.models.ranking import Ranking
+
+# Alembic config
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# SQLAlchemy metadata
+target_metadata = Base.metadata
+
+# DATABASE URLni pydantic settings yoki .ini fayldan olish
+DATABASE_URL = config.get_main_option("sqlalchemy.url")
+
+
+def run_migrations_offline() -> None:
+    """Offline mode: faqat SQL string generatsiya qiladi, DB bilan ulanmaydi"""
+    context.configure(
+        url=DATABASE_URL,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+        compare_type=True,  # column type o‘zgarishlarni tekshiradi
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def do_run_migrations(connection):
+    """Sinxron callback: connection uzatiladi"""
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True,
+    )
+    context.run_migrations()
+
+
+async def run_migrations_online() -> None:
+    """Online mode: async DB connection bilan ishlaydi"""
+    # Async engine yaratish
+    engine = create_async_engine(DATABASE_URL, poolclass=pool.NullPool)
+
+    async with engine.connect() as connection:
+        # Async connection ichida sinxron run_migrations chaqirish
+        await connection.run_sync(do_run_migrations)
+
+    await engine.dispose()
+
+
+# Offline yoki online modeni aniqlash
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    asyncio.run(run_migrations_online())
+
+
+
+
