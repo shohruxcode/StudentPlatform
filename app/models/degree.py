@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import List
 from sqlalchemy import Integer, String, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from typing import List
+from typing import Optional
 
 
 class Degree(Base):
@@ -24,4 +24,7 @@ class Degree(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    students: Mapped[List["StudentDegree"]] = relationship("StudentDegree", back_populates="degree")
+    # Relationship to StudentDegree
+    students: Mapped[List["StudentDegree"]] = relationship(
+        "StudentDegree", back_populates="degree", cascade="all, delete-orphan"
+    )

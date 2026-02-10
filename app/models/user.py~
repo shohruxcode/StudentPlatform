@@ -42,8 +42,8 @@ class Student(Base):
 
     projects: Mapped[List["Project"]] = relationship("Project", back_populates="student")
     achievements: Mapped[List["StudentAchievement"]] = relationship("StudentAchievement", back_populates="student")
-    degrees: Mapped[List["StudentDegree"]] = relationship(
-        "StudentDegree",
+    degrees: Mapped[List["Degree"]] = relationship(
+        "Degree",
         back_populates="student",
         cascade="all, delete-orphan"
     )

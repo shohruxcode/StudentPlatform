@@ -10,3 +10,8 @@ router = APIRouter()
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     return await auth_service.register_new_student(db, user_in)
+
+
+@router.post("/login", response_model=UserRead, status_code=status.HTTP_200_OK)
+async def login(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
+    return await auth_service.login(db, user_in)

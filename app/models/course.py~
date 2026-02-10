@@ -32,6 +32,6 @@ class Course(Base):
 
     students: Mapped[List["Student"]] = relationship(
         "Student",
-        secondary="student_courses",
+        secondary="student_courses",  
         back_populates="enrolled_courses"
     )

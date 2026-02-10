@@ -22,7 +22,7 @@ class Project(Base):
     status: Mapped[str] = mapped_column(String(20), default="Draft")  # Draft, Submitted, etc.
     points_earned: Mapped[int] = mapped_column(Integer, default=0)
     instructor_feedback: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    grade: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)  # A, B, C, D, F
+    grade: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)
 
     views_count: Mapped[int] = mapped_column(Integer, default=0)
     likes_count: Mapped[int] = mapped_column(Integer, default=0)

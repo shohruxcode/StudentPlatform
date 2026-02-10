@@ -6,7 +6,6 @@ from app.config import settings
 from app.api.v1.router import api_router
 from app.db.database import init_db
 from app.core.exceptions import register_exception_handlers
-from app.db.base_class import Base
 from app.db import base
 
 
