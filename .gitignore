@@ -1,0 +1,21 @@
+@"
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+venv/
+.env
+
+# Database
+*.db
+*.sqlite3
+
+# PostgreSQL
+*.postgres
+
+# Logs
+*.log
+"@ | Set-Content .gitignore -Encoding utf8
